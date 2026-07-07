@@ -41,35 +41,74 @@ _Доставка еды_
 
 ## 4. API-контракты
 
-1. createOrder()
-   POST /order/create
-   Body: {
-     dishesList,
-     restaurantLocation,
-     destinationLocation,
-     orderPrice
-   }
-2. createDelivery()
-   POST /delivery/create
-   Body: {
-     dishesList,
-     restaurantLocation,
-     destinationLocation,
-     deliveryPrice
-   }
-3. getRestaurant()
-   GET /restaurant/list
-   Body: {
-     restaurantName,
-     restaurantDescription,
-     restaurantLocation
-   }
-4. updateLocations()
-   POST /location/update
-   Body: {
-     courierId,
-     location
-   }
+1. rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse)
+    ```    
+      Request:
+      {
+          dishesList,
+          restaurantLocation,
+          destinationLocation,
+          orderPrice
+      }
+        
+      Response:
+      {
+          orderId,
+          status
+      }
+    ```
+2. rpc CreateDelivery(CreateDeliveryRequest) returns (CreateDeliveryResponse)
+    ```
+      Request:
+      {
+          orderId,
+          deliveryPrice
+      }
+    
+      Response:
+      {
+          deliveryId,
+          status
+      }
+    ```
+3. GetRestaurants
+    ```   
+       query GetRestaurants($name: String) {
+         restaurants(name: $name) {
+           id
+           name
+           description
+           location
+         }
+       }
+    
+       Response:
+       {
+         "data": {
+           "restaurants": [
+             {
+               "id": "...",
+               "name": "...",
+               "description": "...",
+               "location": "..."
+             }
+           ]
+         }
+       }
+    ```
+4. rpc UpdateLocation(UpdateLocationRequest) returns (UpdateLocationResponse)
+    ```
+       Request:
+       {
+           courierId,
+           location
+       }
+        
+       Response:
+       {
+           success
+       }
+    ```
 
 ## 5. Асинхронность
 
@@ -79,4 +118,7 @@ _Доставка еды_
 
 ## 6. Паттерны
 
-_Saga, CQRS и т.д. — обоснование._
+SAGA - да, сложные и ресурсоемкие задачи такие как создание заказа и подбор курьера, оплата, различные проверки необходимо контролировать и распределять на разные сервисы. В данном случае оркестратором выступает Order Service
+SQRS - да, на базах Restaurant DB и Location DB высокая нагрузка на чтение, при пиковых нагрузках важно чтобы транзакции проходили быстро, выделение запросов на чтение в отдельный поток может помочь снизить нагрузку на базу.  
+Однако это повысит затраты на инфрасруктуру, надо смотреть по фактической нагрузке на тестах
+
