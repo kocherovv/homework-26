@@ -39,7 +39,8 @@ Cвязь основана на ключах restaurant_id и dish_id, цело�
   
 Cхема данных:
   
-```erDiagram
+```mermaid
+erDiagram
     USERS {
         uuid id PK
         string phone UK
