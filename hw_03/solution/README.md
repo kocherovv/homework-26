@@ -98,7 +98,7 @@ erDiagram
 
     DELIVERIES {
         uuid id PK
-        uuid order_id FK UNIQUE
+        uuid order_id FK "one delivery per order"
         uuid courier_id FK
         string status
         decimal delivery_price
